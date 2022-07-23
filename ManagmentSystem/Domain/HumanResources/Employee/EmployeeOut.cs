@@ -1,4 +1,4 @@
-﻿namespace Application.HumanResources;
+﻿namespace Domain.HumanResources;
 
 public class EmployeeOut
 {
