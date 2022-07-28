@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Common.Out;
 using Domain.HumanResources;
+using Infrastructure.AppException;
 using Infrastructure.Extension;
 using Infrastructure.Helper;
 using Infrastructure.ORM;
@@ -52,5 +53,33 @@ public class EmployeeService : MasterService, IEmployee, IScopped
 
         return new FilterResultOut<EmployeeDataOut>(filter.PageSize, await query.CountAsync(), 
             await query.GetPage(filter.PageNo, filter.PageSize, filter.OrderBy, filter.IsDesc).ToListAsync());        
+    }
+
+    public async Task<List<AutoComplete>> GetAutoComplete(string? term)
+    {
+        return await _context.Employee.AsNoTracking()
+            .Where(x => string.IsNullOrWhiteSpace(term) || x.Name.ToLower().Contains(term.ToLower()))
+            .Select(x => new AutoComplete { Key = x.Id, Value = x.Name })
+            .ToListAsync();
+    }
+
+    public async Task<EmployeeOut> Create(EmployeeModel model)
+    {
+        if (await _context.Employee.AsNoTracking().AnyAsync(x => x.Name.ToLower().Equals(model.Name.ToLower())))
+        {
+            throw new DuplicateException(nameof(model.Name));
+        }
+
+        Employee entity = _mapper.Map<Employee>(model);
+
+        entity.IsRemoved = false;
+        entity.CreateUserId = 0;
+        entity.CreateDate = DateTime.UtcNow.AddHours(3);
+
+        await _context.Employee.AddAsync(entity);
+
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<EmployeeOut>(entity);
     }
 }

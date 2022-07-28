@@ -33,7 +33,7 @@ public class ErrorHandler
             {
                 case LogicException:
                     response.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                    objectResult = new { Message = exception.Message };
+                    objectResult = new { exception.Message };
                     break;
 
                 case KeyNotFoundException:
@@ -43,7 +43,7 @@ public class ErrorHandler
 
                 case UnauthorizedAccessException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    objectResult = new { Message = exception.Message };
+                    objectResult = new { exception.Message };
                     break;
 
                 case DuplicateException:
