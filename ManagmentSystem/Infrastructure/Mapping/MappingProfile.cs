@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Domain.HumanResources;
 
-namespace Application;
+namespace Infrastructure.Mapping;
 
 public class MappingProfile : Profile
 {

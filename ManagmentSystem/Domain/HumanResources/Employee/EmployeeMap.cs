@@ -7,7 +7,7 @@ public class EmployeeMap : IEntityTypeConfiguration<Employee>
 {
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
-        builder.ToTable(nameof(Employee), "dbo");
+        builder.ToTable(nameof(Employee), "HR");
 
         builder.HasKey(x => x.Id);
 

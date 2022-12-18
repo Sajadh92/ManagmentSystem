@@ -11,4 +11,8 @@ public interface IEmployee
     Task<ExcelResult<EmployeeExcelOut>> ExportExcel(EmployeeFilter filter);
     Task<List<AutoComplete>> GetAutoComplete(string? term);
     Task<EmployeeOut> Create(EmployeeModel model);
+    Task Update(EmployeeModel model);
+    Task Remove(int id);
+    Task PermanentRemove(int id);
+    Task Restore(int id);
 }

@@ -1,5 +1,5 @@
-using Application;
 using AutoMapper;
+using Infrastructure.Mapping;
 using Infrastructure.ORM;
 using Infrastructure.Service;
 using Microsoft.EntityFrameworkCore;

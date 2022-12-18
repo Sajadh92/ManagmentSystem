@@ -96,17 +96,93 @@ public class EmployeeService : MasterService, IEmployee, IScopped
             throw new DuplicateException(nameof(model.Name));
         }
 
-        Employee entity = _mapper.Map<Employee>(model);
+        Employee employee = _mapper.Map<Employee>(model);
 
-        entity.IsRemoved = false;
-        entity.CreateUserId = 0;
-        entity.CreateDate = DateTime.UtcNow.AddHours(3);
+        employee.IsRemoved = false;
+        employee.CreateUserId = 0;
+        employee.CreateDate = DateTime.UtcNow.AddHours(3);
 
-        await _context.Employee.AddAsync(entity);
+        await _context.Employee.AddAsync(employee);
 
         await _context.SaveChangesAsync();
 
-        return _mapper.Map<EmployeeOut>(entity);
+        return _mapper.Map<EmployeeOut>(employee);
+    }
+
+    public async Task Update(EmployeeModel model)
+    {
+        Employee? employee = await _context.Employee.FindAsync(model.Id);
+
+        if (employee == null)
+        {
+            throw new KeyNotFoundException(nameof(model.Id));
+        }
+
+        _mapper.Map(model, employee);
+
+        employee.UpdateUserId = 0;
+        employee.UpdateDate = DateTime.UtcNow.AddHours(3);
+
+        _context.Update(employee);
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task Remove(int id)
+    {
+        Employee? employee = await _context.Employee.FindAsync(id);
+
+        if (employee == null)
+        {
+            throw new KeyNotFoundException(nameof(id));
+        }
+
+        if (employee.IsRemoved)
+        {
+            await PermanentRemove(id);
+        }
+        else
+        {
+            employee.IsRemoved = true;
+            employee.RemoveUserId = 0;
+            employee.RemoveDate = DateTime.UtcNow.AddHours(3);
+
+            _context.Update(employee);
+
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task PermanentRemove(int id)
+    {
+        Employee? employee = await _context.Employee.FindAsync(id);
+
+        if (employee == null)
+        {
+            throw new KeyNotFoundException(nameof(id));
+        }
+
+        _context.Remove(employee);
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task Restore(int id)
+    {
+        Employee? employee = await _context.Employee.FindAsync(id);
+
+        if (employee == null)
+        {
+            throw new KeyNotFoundException(nameof(id));
+        }
+
+        employee.IsRemoved = false;
+        employee.CreateUserId = 0;
+        employee.CreateDate = DateTime.UtcNow.AddHours(3);
+
+        _context.Update(employee);
+
+        await _context.SaveChangesAsync();
     }
 
     private static string Translate(string key, string lang)
