@@ -18,6 +18,8 @@ builder.Services.AddDbContext<DBContext>(option => option.UseSqlServer(DBConn.Co
 // For PostgreSQL Connection 
 //builder.Services.AddDbContext<DBContext>(option => option.UseNpgsql(DBConn.ConnectionString));
 
+builder.Services.AddMemoryCache();
+
 builder.Services.Register<ISingleton>();
 
 builder.Services.Register<IScopped>();
